@@ -1,5 +1,6 @@
-class ScrapeSocialBladePageJob < ApplicationJob
-  queue_as :default
+class InstaSBListJob < ApplicationJob
+  # Scrape a given SB YT_top list
+
 
   def browser
     @_browser ||= Watir::Browser.new(:firefox)

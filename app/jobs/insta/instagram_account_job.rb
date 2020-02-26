@@ -1,0 +1,3 @@
+class InstagramAccountJob < ApplicationJob
+
+end

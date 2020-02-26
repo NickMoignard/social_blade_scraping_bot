@@ -1,0 +1,3 @@
+class TwitchChannelJob < ApplicationJob
+
+end

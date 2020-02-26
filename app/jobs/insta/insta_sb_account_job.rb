@@ -1,9 +1,5 @@
-class GatherYtChannelDataJob < ApplicationJob
-  queue_as :default
-  BASE_URL = 'https://socialblade.com'
-  def browser
-    @_browser ||= Watir::Browser.new(:firefox)
-  end
+class InstaSBAccountJob < ApplicationJob
+  # go to channel page on SB and scrape
 
   def perform(url)
     browser.goto("#{BASE_URL}#{url}/monthly")

@@ -1,9 +1,4 @@
-class ScrapeTwitterSocialBladeJob < ApplicationJob
-  queue_as :default
-
-  def browser
-    @_browser ||= Watir::Browser.new(:firefox)
-  end
+class TwitterAccountJob < ApplicationJob
 
   def perform(*args)
     browser.goto('')
@@ -11,16 +6,12 @@ class ScrapeTwitterSocialBladeJob < ApplicationJob
       doc = Nokogiri::HTML.parse(browser.html)
       accounts = docs.css()
 
-
-      
-
-
-
       data = accounts.map do |account|
         [
           account.at_css().try().strip
         ]
       end
+
       data.each do |row|
         @twitter = Twitter.where({
           :username => row[0]
@@ -40,8 +31,3 @@ end
           # twitter.joined = Datetime.new
           # twitter.bio = 'fasdf'
           # twitter.website = 'dsfa'
-          # twitter.avg_retweets = row[]
-          # twitter.avg_likes = 9
-          # twitter.daily_followers = 1
-          # twitter.monthly_followers = 1
-          # twitter.daily_tweets = 1
