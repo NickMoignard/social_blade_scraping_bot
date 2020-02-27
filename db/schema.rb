@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_25_132719) do
+ActiveRecord::Schema.define(version: 2020_02_27_023406) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,23 @@ ActiveRecord::Schema.define(version: 2020_02_25_132719) do
     t.datetime "channel_created"
   end
 
+  create_table "instagrams", force: :cascade do |t|
+    t.string "handle"
+    t.integer "total_posts"
+    t.integer "total_followers"
+    t.string "url"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "twitch_channels", force: :cascade do |t|
+    t.string "username"
+    t.integer "total_followers"
+    t.integer "total_views"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "twitters", force: :cascade do |t|
     t.integer "avg_retweets"
     t.integer "avg_likes"
@@ -51,6 +68,7 @@ ActiveRecord::Schema.define(version: 2020_02_25_132719) do
     t.string "website"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "handle"
   end
 
 end

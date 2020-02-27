@@ -3,7 +3,23 @@ class StartSocialBladeJobsJob < ApplicationJob
 
   
   def perform(*args)
-    puts social_blade_urls
+    social_blade_urls.each do |url|
+      
+      case url
+      when /twitter/
+        TwitterSbListJob.perform_later(url)  
+      when /engagements/
+        TwitterEngagementSbListJob.perform_later(url)
+      when /twitch/
+        TwitchSbListJob.perform_later(url)
+      when /youtube/
+        YtSbListJob.perform_later(url)
+      when /instagram/
+        InstaSbListJob.perform_later(url)
+      else
+        puts "An error occured trying: #{url}"      
+      end    
+    end
   end
 
   
@@ -16,27 +32,29 @@ class StartSocialBladeJobsJob < ApplicationJob
     _urls = nodes.map do |n|
       n['href']
     end
-
+# 
     twitter_urls = [
-      'https://socialblade.com/twitter/top/100',
-      'https://socialblade.com/twitter/top/100/tweets',
-      'https://socialblade.com/twitter/top/100/engagements'
+      '/twitter/top/100',
+      '/twitter/top/100/tweets',
+      '/twitter/top/100/engagements'
     ]
     twitch_urls = [
-      'https://socialblade.com/twitch/top/500',
-      'https://socialblade.com/twitch/top/500/channelviews'
+      '/twitch/top/500',
+      '/twitch/top/500/channelviews'
     ]
     instagram_urls= [
-      'https://socialblade.com/instagram/top/100/followers',
-      'https://socialblade.com/instagram/top/100/media'
+      '/instagram/top/100/followers',
+      '/instagram/top/100/media'
     ]  
     youtube_base_urls = [
-      'https://socialblade.com/youtube/top/500',
-      'https://socialblade.com/youtube/top/trending/top-500-channels-1-day/most-subscribed',
-      'https://socialblade.com/youtube/top/category/made-for-kids'
+      '/youtube/top/500',
+      '/youtube/top/trending/top-500-channels-1-day/most-subscribed',
+      '/youtube/top/category/made-for-kids'
     ]
 
-    return _urls + twitch_urls + twitter_urls + instagram_urls + youtube_base_urls
+    return (_urls + twitch_urls + twitter_urls + instagram_urls + youtube_base_urls).map do |url_stub|
+      "https://socialblade.com#{url_stub}"
+    end  
   end  
 
 end

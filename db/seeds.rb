@@ -5,6 +5,4 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-Channel.all.each do |c|
-    GatherYtChannelDataJob.perform_later(c.url)
-end
+StartSocialBladeJobsJob.perform_later

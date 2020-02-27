@@ -1,0 +1,2 @@
+class TwitchChannel < ApplicationRecord
+end

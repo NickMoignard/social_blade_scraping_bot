@@ -1,11 +1,4 @@
-class InstaSBListJob < ApplicationJob
-  # Scrape a given SB YT_top list
-
-
-  def browser
-    @_browser ||= Watir::Browser.new(:firefox)
-  end
-
+class YtSbListJob < ApplicationJob
   def perform(url)
     
     browser.goto(url)
@@ -40,15 +33,8 @@ class InstaSBListJob < ApplicationJob
       end
       browser.close      
     end
-    #no end needed - fix typos
   end
 end
 
-        # :grade => row[0],
-        # :username => row[1],
-        # :uploads => row[2],
-        # :subs => row[3],
-        # :views => row[4],
-        
 
 

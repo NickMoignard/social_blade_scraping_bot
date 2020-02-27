@@ -1,5 +1,5 @@
 class YoutubeChannelJob < ApplicationJob
-    def perform(username)
-        browser.goto("#{YT_BASE_URL}")
+    def perform(url)
+        puts 'To Be Implemented'
     end
 end
