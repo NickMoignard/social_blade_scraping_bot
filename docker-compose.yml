@@ -1,0 +1,91 @@
+version: '3'
+
+    
+volumes:
+    redis:
+    postgres:
+    xauth:
+    x11-unix:
+
+services: 
+    postgres:
+        image: postgres
+        volumes: 
+            - ./tmp/db/var/lib/postgresql/data
+
+    web:
+        build: .
+        command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+        volumes:
+            - .:/usr/src/app
+        ports:
+            - "3000:3000"
+        depends_on:
+            - 'postgres'
+        env_file:
+            - '.env'
+    geckodriver:
+        build:
+            context: .
+        volumes:
+            - /etc/machine-id:/etc/machine-id
+            - xauth:/tmp/xauth
+            - x11-unix:/tmp/.X11-unix
+        ports:
+            - 4444:4444
+        environment:
+            DISPLAY: :0
+            XAUTHORITY: /tmp/xauth/Xauthority
+    xvfb:
+        image: quay.io/cvlibrary/xvfb
+        volumes:
+            - xauth:/tmp/xauth
+            - x11-unix:/tmp/.X11-unix
+        # FIXME: what we really want is for x11vnc to use the xvfb container's
+        # ipc namespace.  For now we just share both with the host.
+        ipc: "host"
+        command: -screen 0 1920x1080x24
+    x11vnc:
+        image: quay.io/cvlibrary/x11vnc
+        depends_on:
+            - xvfb
+        volumes:
+            - xauth:/tmp/xauth
+            - x11-unix:/tmp/.X11-unix
+        command: -q -nopw -auth /tmp/xauth/Xauthority
+        environment:
+            DISPLAY: :0
+        ipc: "host"
+        ports:
+            - 5900:5900
+    redis:
+        image: 'redis'
+        command: redis-server
+        volumes: 
+            - 'redis:/data'
+
+    sidekiq:
+        depends_on:
+            - 'postgres'
+            - 'redis'
+        build: .
+        command: sidekiq -C config/sidekiq.yml.erb
+        volumes:
+            - '.:/usr/src/app'
+        env_file:
+            - '.env'
+
+    cable:
+        depends_on:
+            - 'redis'
+        build: .
+        command: puma -p 28080 cable/config.ru
+        ports:
+            - '28080:28080'
+        volumes:
+            - '.:/usr/src/app'
+        env_file:
+            - '.env'
+
+        
+    

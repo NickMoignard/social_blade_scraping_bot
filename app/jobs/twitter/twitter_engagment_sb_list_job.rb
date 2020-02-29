@@ -14,16 +14,18 @@ class TwitterEngagementSbListJob < ApplicationJob
         # usernames = usernames.zip(total_followers)
         
         usernames.each do |row|
-          @twitter = Twitter.where({
+          @twitter = TwitterAccount.where({
             :handle => row[0]
           }).first_or_create do |t|
             t.handle = row[0]
             t.total_tweets = row[1]
             t.avg_retweets = row[2]
             t.avg_likes = row[3]
-  
-            t.save
+
           end  
+          person = Person.new
+          person.social_presence = SocialPresence.new :twitter_account => @twitter
+          person.save!
         end
         browser.close      
       end

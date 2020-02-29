@@ -1,9 +1,10 @@
-class TwitchSbListJob < ApplicationJob
+class TwitchSbListWorker < ApplicationWorker
+  sidekiq_options queue: 'critical'
   def perform(url)
     browser.goto(url)
     browser.wait_until(timeout:2) do |browser|
       doc = Nokogiri::HTML.parse(browser.html)
-
+      browser.close
       table = 'body > div.main-container > div.content-container > div.content-module-wide > '
       usernames = doc.css("#{table}div:nth-child(5n+3)").map do |x| x.try(:text).strip end
       total_followers = doc.css("#{table}div:nth-child(5n+4)").map do |x| x.try(:text).strip.tr(',','').to_i end
@@ -17,11 +18,14 @@ class TwitchSbListJob < ApplicationJob
           t.username = row[0]
           t.total_followers = row[1]
           t.total_views = row[2]
-
-          t.save
+        end  
+        person = Person.new
+        person.social_presence = SocialPresence.new :twitch_channel => @twitch
+        if person.save!
+          # TwitchChanelWorker.perform_async(@twich.id)
         end  
       end
-      browser.close      
+      # browser.close      
     end
   end
 end

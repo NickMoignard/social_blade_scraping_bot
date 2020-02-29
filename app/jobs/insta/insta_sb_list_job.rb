@@ -16,15 +16,21 @@ class InstaSbListJob < ApplicationJob
       
       data.each do |row|
 
-        @channel = Instagram.where({
+
+
+
+        @account = InstagramAccount.where({
           :handle => row[0]
         }).first_or_create do |i|
           i.handle = row[0]
           i.total_posts = row[1]
           i.total_followers = row[2]
           i.url = row[3]
-          i.save!
-        end  
+        end
+        
+        person = Person.new
+        person.social_presence = SocialPresence.new :instagram_account => @account
+        person.save!
       end
       browser.close      
     end

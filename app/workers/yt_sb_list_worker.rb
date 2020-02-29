@@ -1,9 +1,11 @@
-class YtSbListJob < ApplicationJob
+class YtSbListWorker < ApplicationWorker
+  sidekiq_options queue: 'critical'
   def perform(url)
     
     browser.goto(url)
     browser.wait_until(timeout:2) do |browser|
       doc = Nokogiri::HTML.parse(browser.html)
+      browser.close
       channels = doc.css('body > div:nth-child(15) > div:nth-child(2) > div[style*="font-size: 10pt; border-bottom: 1px solid #eee"]')
       data = channels.map do |channel|
         [
@@ -18,7 +20,7 @@ class YtSbListJob < ApplicationJob
       
       data.each do |row|
 
-        @channel = Channel.where({
+        @channel = YoutubeChannel.where({
           :url => row[5]
         }).first_or_create do |channel|
           channel.grade = row[0]
@@ -27,11 +29,14 @@ class YtSbListJob < ApplicationJob
           channel.subs = row[3]
           channel.views = row[4]
           channel.url = row[5]
-
-          channel.save
-        end  
+        end
+        person = Person.new
+        person.social_presence = SocialPresence.new :youtube_channel => @channel
+        if person.save!
+          # YoutubeChannelWorker.perform_async(@channel.id)
+        end
       end
-      browser.close      
+      # browser.close      
     end
   end
 end

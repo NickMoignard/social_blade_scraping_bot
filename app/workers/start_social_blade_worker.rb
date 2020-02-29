@@ -1,4 +1,4 @@
-class StartSocialBladeJobsJob < ApplicationJob
+class StartSocialBladeWorker < ApplicationWorker
   # Scrape SB for navigation links
 
   
@@ -7,15 +7,15 @@ class StartSocialBladeJobsJob < ApplicationJob
       
       case url
       when /twitter/
-        TwitterSbListJob.perform_later(url)  
+        TwitterSbListWorker.perform_async(url)  
       when /engagements/
-        TwitterEngagementSbListJob.perform_later(url)
+        TwitterEngagementSbListWorker.perform_async(url)
       when /twitch/
-        TwitchSbListJob.perform_later(url)
+        TwitchSbListWorker.perform_async(url)
       when /youtube/
-        YtSbListJob.perform_later(url)
+        YtSbListWorker.perform_async(url)
       when /instagram/
-        InstaSbListJob.perform_later(url)
+        InstaSbListWorker.perform_async(url)
       else
         puts "An error occured trying: #{url}"      
       end    
@@ -32,7 +32,7 @@ class StartSocialBladeJobsJob < ApplicationJob
     _urls = nodes.map do |n|
       n['href']
     end
-# 
+     
     twitter_urls = [
       '/twitter/top/100',
       '/twitter/top/100/tweets',
@@ -52,7 +52,7 @@ class StartSocialBladeJobsJob < ApplicationJob
       '/youtube/top/category/made-for-kids'
     ]
 
-    return (_urls + twitch_urls + twitter_urls + instagram_urls + youtube_base_urls).map do |url_stub|
+    return (twitter_urls + instagram_urls + twitch_urls + youtube_base_urls + _urls).map do |url_stub|
       "https://socialblade.com#{url_stub}"
     end  
   end  

@@ -1,9 +1,10 @@
-class TwitterSbListJob < ApplicationJob
+class TwitterSbListWorker < ApplicationWorker
+  sidekiq_options queue: 'critical'
   def perform(url)
     browser.goto(url)
     browser.wait_until(timeout:2) do |browser|
       doc = Nokogiri::HTML.parse(browser.html)
-
+      browser.close
       table = 'body > div.main-container > div.content-container > div.content-module-wide > '
       usernames = doc.css("#{table}div:nth-child(6n+3)").map do |x| x.try(:text).strip end
       total_tweets = doc.css("#{table}div:nth-child(6n+4)").map do |x| x.try(:text).strip.tr(',','').to_i end
@@ -11,17 +12,22 @@ class TwitterSbListJob < ApplicationJob
       usernames = usernames.zip(total_tweets, total_followers)
 
       usernames.each do |row|
-        @twitter = Twitter.where({
+        @twitter = TwitterAccount.where({
           :handle => row[0]
         }).first_or_create do |t|
           t.handle = row[0]
           t.total_tweets = row[1]
           t.total_followers = row[2]
+        end
 
-          t.save
-        end  
+        
+        person = Person.new
+        person.social_presence = SocialPresence.new :twitter_account => @twitter
+        if person.save!  
+          # TwitterAccountWorker.perform_async(@twitter.id)
+        end
       end
-      browser.close      
+      # browser.close      
     end
   end
 end

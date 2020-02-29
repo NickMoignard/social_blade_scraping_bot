@@ -4,6 +4,9 @@ class CreateTwitchChannels < ActiveRecord::Migration[6.0]
       t.string :username, :unique => true
       t.integer :total_followers
       t.integer :total_views
+      t.references :social_presence, index: true
+
+
 
       t.timestamps
     end

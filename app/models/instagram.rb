@@ -1,2 +1,0 @@
-class Instagram < ApplicationRecord
-end
