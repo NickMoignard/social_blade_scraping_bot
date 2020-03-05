@@ -5,7 +5,7 @@ This project is still in the early stages of development.
 
 * Deployment instructions
     This repo only works locally currently. I will containerize this application very soon
-    
+
 * Ruby version
     2.6.3
 
@@ -16,20 +16,19 @@ This project is still in the early stages of development.
     Redis
     Firefox & Geckodriver in path
 
-
 * Configuration
     ```
-    createuser nlm with password dingo
+    create postgres user 'nlm' with password 'dingo'
 
 * Database creation
     ```
-    rails db:create
-    rails db:migrate
+    $ rails db:create
+    $ rails db:migrate
 
 * Database initialization
     ```
     *with sidekiq and redis running
-    rails db:seed
+    $ rails db:seed
 
 * Services (job queues, cache servers, search engines, etc.)
     ```
@@ -42,6 +41,3 @@ This project is still in the early stages of development.
             - TwitterAccountWorker (twitter.com/account)
         - YoutubeSBListWorker (socialblade.com top 500 + categories + countries)
             - YoutubeChannelWorker (youtube.com/channel)
-
-
-
