@@ -7,25 +7,25 @@ This project is still in the early stages of development.
     2.6.3
 
 * System dependencies
-    PostgreSQL '=> 9.0.7'
+    `PostgreSQL '=> 9.0.7'
     Sidekiq
     Redis
-    Firefox & Geckodriver in path
+    Firefox & Geckodriver in path`
 
 
 * Configuration
-    createuser nlm with password dingo
+    `createuser nlm with password dingo`
 
 * Database creation
-    rails db:create
-    rails db:migrate
+    `rails db:create
+    rails db:migrate`
 
 * Database initialization
-    *with sidekiq and redis running
-    rails db:seed
+    `*with sidekiq and redis running
+    rails db:seed`
 
 * Services (job queues, cache servers, search engines, etc.)
-    StartSocialBladeJobsWorker
+    `StartSocialBladeJobsWorker
         -> InstagramSBListWorker (top 100)
             -> InstagramAccountWorker (instgram.com/account)
         -> TwitchSBListWorker (top 500)
@@ -33,7 +33,7 @@ This project is still in the early stages of development.
         -> TwitterSBListWorker (top 100)
             -> TwitterAccountWorker (twitter.com/account)
         -> YoutubeSBListWorker (socialblade.com top 500 + categories + countries)
-            -> YoutubeChannelWorker (youtube.com/channel)
+            -> YoutubeChannelWorker (youtube.com/channel)`
 
 * Deployment instructions
     This repo only works locally currently. I will containerize this application very soon
